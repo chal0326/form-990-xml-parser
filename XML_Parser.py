@@ -18,6 +18,8 @@
     --mongodb       Mongo 
     --qa            Specifies the environment QA            - Local Test Environment
     --prod          Specifies the environment PRODUCTION    - AWS Production Environment 
+    --d1            Use Cloudflare D1 database
+    --r2            Use Cloudflare R2 storage
     
     Example: 
         
@@ -216,19 +218,19 @@ def init(index_name):
                     if form is None:
                         continue
 
-                    # Step 3b7a4 if --Mongodb has been passed from consol then store to mongo
-                    if '--mongodb' in ARGS:
+                    # Step 3b7a4 if --Mongodb or --d1 has been passed from consol then store
+                    if '--mongodb' in ARGS or '--d1' in ARGS:
 
-                        # Step 3b7a4a1 if -f is in arguments then use the insert data by force into mongo
+                        # Step 3b7a4a1 if -f is in arguments then use the insert data by force
                         if '-f' in ARGS:
 
                             # Step 3b7a4a2
                             # Finds the form, if it exists removes it and reinserts it
                             form.insert_data_force_to_mongo()
 
-                        # Step 3b7a4b Else insert the data normally into mongo.
+                        # Step 3b7a4b Else insert the data normally.
                         else:
-                            #print ('Inserting document %s into Mongo' % xml_link)
+                            #print ('Inserting document %s into DB' % xml_link)
                             form.insert_data_to_mongo()
                     
                     # 3b7b Increase counter

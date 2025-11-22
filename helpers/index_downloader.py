@@ -117,6 +117,16 @@ def fetch_filings_from_index_file(index_name):
     # Step 2. Create a file path for index_name we are processing. 
     file_path = str.format('{0}.json', index_name)
 
+    # Step 2b. If we are using R2 storage, upload the index to R2
+    if '--r2' in sys.argv[1:]:
+        from helpers.r2_manager import R2Manager
+        r2 = R2Manager()
+        full_path = os.path.join(INDEXES_DIR, file_path)
+        if os.path.exists(full_path):
+            r2.upload_file(full_path)
+        else:
+            print(f"File {full_path} does not exist, skipping upload to R2")
+
     try:
 
         # Step 3. open index file
