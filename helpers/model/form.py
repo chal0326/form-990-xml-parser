@@ -1,8 +1,44 @@
 
 from helpers.database.interface import MongoInterface 
+from helpers.database.d1_interface import D1Interface
+import sys
+
 # Overview: 3 Classes (1 per document)  with one interface per form, each interface contains methods to access databases 
 
-class Form990PF (MongoInterface):
+class FormBase(MongoInterface):
+    """
+    Base class that handles routing to either Mongo or D1 based on flags
+    """
+    def __init__(self, all_data, schedules, form_type):
+        super(FormBase, self).__init__(all_data, schedules, form_type)
+        self.all_data = all_data
+        self.schedules = schedules
+        self.form_type = form_type
+        self.use_d1 = '--d1' in sys.argv[1:]
+        if self.use_d1:
+             self.d1_interface = D1Interface()
+
+    def insert_data_to_mongo(self):
+        if self.use_d1:
+             self.d1_interface.insert_form(self.all_data, self.schedules, self.form_type)
+        else:
+             super(FormBase, self).insert_data_to_mongo()
+
+    def insert_data_force_to_mongo(self):
+        if self.use_d1:
+             # D1 insert uses INSERT OR REPLACE, so force is implied
+             self.d1_interface.insert_form(self.all_data, self.schedules, self.form_type)
+        else:
+             super(FormBase, self).insert_data_force_to_mongo()
+
+    def update_data_mongo(self):
+        if self.use_d1:
+             # D1 insert uses INSERT OR REPLACE
+             self.d1_interface.insert_form(self.all_data, self.schedules, self.form_type)
+        else:
+             super(FormBase, self).update_data_mongo()
+
+class Form990PF (FormBase):
 
 	'''
 
@@ -23,7 +59,7 @@ class Form990PF (MongoInterface):
         # w variables all data & schedules --> allows us to bind the data that will be passed from parser
         # setting the form type variable as 990pf
 
-class Form990 (MongoInterface):
+class Form990 (FormBase):
 
 
 	'''
@@ -46,7 +82,7 @@ class Form990 (MongoInterface):
         # setting the form type variable as 990
 
 
-class Form990EZ (MongoInterface):
+class Form990EZ (FormBase):
 
 	'''
 

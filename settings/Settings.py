@@ -25,6 +25,15 @@ mongo_database_name = 'irs_xml' 			   # Main Mongo DB Name where we store our co
 schedules_reg_collection_name = 'schedules'   # Name of Schedules Collection for documents < 16mb in size
 schedules_large_collection_name = 'schedulesb' # Name of Schedules Collection for documents > 16mb in size
 
+### Cloudflare Details
+cloudflare_account_id = os.getenv('CLOUDFLARE_ACCOUNT_ID', '')
+cloudflare_api_token = os.getenv('CLOUDFLARE_API_TOKEN', '')
+cloudflare_d1_database_id = os.getenv('CLOUDFLARE_D1_DATABASE_ID', '')
+cloudflare_r2_bucket_name = os.getenv('CLOUDFLARE_R2_BUCKET_NAME', '')
+cloudflare_r2_access_key_id = os.getenv('CLOUDFLARE_R2_ACCESS_KEY_ID', '')
+cloudflare_r2_secret_access_key = os.getenv('CLOUDFLARE_R2_SECRET_ACCESS_KEY', '')
+cloudflare_r2_endpoint_url = os.getenv('CLOUDFLARE_R2_ENDPOINT_URL', '')
+
 ### Mapping & Concordance Deatils --- These two files refer to the concordance file created by the Nonprofit Data Collaborative
 #   one file - mapping- contains main variables for all form 990,990ez,990pf, and schedules
 #   the other file - mapping_table- is for table elements from form 
