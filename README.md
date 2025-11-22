@@ -65,6 +65,7 @@ Step 3: Inserting JSON documents into Mongo
     typing_extensions==4.0.1
     urllib3==1.26.8
     yarl==1.7.2
+    boto3
 
 #### Code Repository Directory Structure
 ```
@@ -72,6 +73,7 @@ Parser
 ├── Helpers   
 │   ├── Database               
 │   │   ├── interface.py                    # Contains an interface class allowing us to load documents into mongo as well as perform other CRUD operations.
+│   │   ├── d1_interface.py                 # Interface for Cloudflare D1 interactions
 │   ├── Factory 
 │   │   ├── formfactory.py                  # Imports 3 classes one for each form from form.py (below) with 1 interface for mongo
 │   ├── Concordance_Files                   # Contains mappings
@@ -88,6 +90,7 @@ Parser
 │   │   ├── formparser.py                   # Each form parser is a class object with 4 initiated variables/objects and various methods used to parse xml
 │   ├── helpers.py                          # Variety of helper methods used across library
 │   ├── index_downloader.py                 # Helper methods used to download xml indices from GivingTuesday Datalake 
+│   ├── r2_manager.py                       # Helper to handle Cloudflare R2 uploads
 │   ├── loggingutil.py                      # Logging library to help us log access, errors, and parser status/progress.
 ├── Images                                  # Series of graphic flowcharts inserted in the README.md file below
 │   ├── Picture1.png  
@@ -121,6 +124,14 @@ Parser
      - schedules_large_collection_name - name of your large schedules collection for mongodb (files greater than 16mb) 
      - mapping_main_file  - read faq below for more details
      - mapping_table_file - read faq below for more details
+   - **Cloudflare Configuration** If using D1 or R2, ensure the following environment variables are set:
+     - `CLOUDFLARE_ACCOUNT_ID`
+     - `CLOUDFLARE_API_TOKEN`
+     - `CLOUDFLARE_D1_DATABASE_ID`
+     - `CLOUDFLARE_R2_BUCKET_NAME`
+     - `CLOUDFLARE_R2_ACCESS_KEY_ID`
+     - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+     - `CLOUDFLARE_R2_ENDPOINT_URL`
    - Activate the virtual environment you created in step 3.
   -  Via the commandline at the main repository level run the following:
         ``` sh
@@ -170,6 +181,8 @@ Parser commands that can be passed from command line/terminal:
 | -c {Number}    | Location from an index where you want to continue inserting/processing | ----------- |
 | -u             | Update Index and insert new documents                                                          | ----------- |
 | --mongodb      | Mongo                                                                  | ----------- |
+| --d1           | Use Cloudflare D1 database                                             | ----------- |
+| --r2           | Use Cloudflare R2 storage for indices                                  | ----------- |
 | --qa           | Specifies the QA/Local Environment Mongo                               | ----------- |
 | --prod         | Specifies the Production Environment                                  | ----------- |
 
@@ -194,6 +207,12 @@ $ python3 XML_Parser.py -i latest_only_0001-12-21 --gtdatalake --qa --mongodb
 
 ```sh
 $ python3 XML_Parser.py -i latest_only_0001-12-21 --gtdatalake -l 100 --qa --mongodb
+```
+
+- Insert xmls from the latest_only_0001-12-21.json index into Cloudflare D1, and backup the index to R2.
+
+```sh
+$ python3 XML_Parser.py -i latest_only_0001-12-21 --gtdatalake --d1 --r2
 ```
 
 - Insert xmls from the latest_only_0001-12-21.json index using force insert - by deleting and reinserting the data (file by file) into production mongodb.
